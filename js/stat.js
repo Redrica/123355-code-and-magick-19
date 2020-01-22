@@ -1,52 +1,97 @@
 'use strict';
 
-var parentEl = document.querySelector('.demo');
-var canvas = document.createElement('canvas');
-parentEl.appendChild(canvas);
+var Dimension = {
+    CLOUD_START_X: 100,
+    CLOUD_START_Y: 10,
+    CLOUD_WIDTH: 420,
+    CLOUD_HEIGHT: 270,
+    CLOUD_GAP: 10,
+    COL_HEIGHT: 150,
+    COL_WIDTH: 40,
+    COL_GAP: 50,
+    COL_START_X: 150,
+    COL_START_Y: 75,
+    TEXT_START_X: 130,
+    TEXT_START_Y: 40,
+    TEXT_GAP_TOP: 20,
+    TEXT_GAP_BOTTOM: 30,
+  },
 
-var ctx = canvas.getContext('2d');
-canvas.style.position = 'absolute';
-canvas.style.left = '250px';
-canvas.style.zIndex = 100;
-canvas.style.border = '1px solid blue';
-canvas.setAttribute('width', 500);
-canvas.setAttribute('height', 300);
+  Text = {
+    START_STRING: 'Ура, вы победили!',
+    INFO_STRING: 'Список результатов:',
+  },
 
-window.renderStatistics = function (ctx) {
-  ctx.fillStyle = 'rgb(255, 255, 255)';
-  ctx.fillRect(100, 10, 420, 270);
+  Color = {
+    CANVAS: 'rgb(255, 255, 255)',
+    TEXT: 'rgb(0, 0, 0)',
+    SHADOW: 'rgba(0, 0, 0, 0.7)',
+    MAIN: 'rgba(255, 0, 0, 1)',
+  },
 
+  TEXT_PARAM = '16px PT Mono',
+  HSL_BASE_HUE = 240,
+  HSL_MAX_SATURATION = 100,
+  HSL_LIGHTNESS = 50,
+  HSL_ALPHA = 1;
 
-  ctx.arcTo(60, 40, 370, 40, 500)
-
-  ctx.beginPath();
-  ctx.fillStyle = 'red';
-  ctx.strokeStyle = 'red';
-  ctx.moveTo(25,  20);
-  ctx.lineTo(80, 50);
-  ctx.bezierCurveTo(130, -5, 370, -5, 400, 40)
-  ctx.lineTo(440, 20);
-  ctx.lineTo(430, 50);
-  ctx.bezierCurveTo(410, 200, 50, 200, 60, 70)
-
-  ctx.closePath();
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(110, 125);
-  ctx.bezierCurveTo(160, 44, 328, 37, 397, 116);
-  ctx.stroke();
-
-  // kitten
-  ctx.beginPath();
-  ctx.moveTo(124, 168);
-  ctx.bezierCurveTo(92, 165, 113, 81, 106, 57);
-  ctx.bezierCurveTo(149, 58, 180, 96, 200, 134);
-  ctx.bezierCurveTo(270, 85, 345, 127, 357, 147);
-  ctx.bezierCurveTo(360, 101, 405, 94, 437, 45);
-  ctx.bezierCurveTo(436, 97, 457, 165, 415, 189);
-  ctx.bezierCurveTo(498, 456, 14, 423, 125, 175);
-  ctx.stroke();
-
+// отрисовка прямоугольника по параметрам
+var renderCloud = function (canvas, x, y, color) {
+  canvas.fillStyle = color;
+  canvas.fillRect(x, y, Dimension.CLOUD_WIDTH, Dimension.CLOUD_HEIGHT);
 };
 
-window.renderStatistics(ctx);
+// отрисовка текста по параметрам
+var renderText = function (canvas, string, x, y, color, fontParam) {
+  canvas.font = fontParam;
+  canvas.fillStyle = color;
+  canvas.fillText(string, x, y);
+};
+
+window.renderStatistics = function (ctx, names, times) {
+  renderCloud(ctx, Dimension.CLOUD_START_X + Dimension.CLOUD_GAP, Dimension.CLOUD_START_Y + Dimension.CLOUD_GAP, Color.SHADOW);
+  renderCloud(ctx, Dimension.CLOUD_START_X, Dimension.CLOUD_START_Y, Color.CANVAS);
+  renderText(ctx, Text.START_STRING, Dimension.TEXT_START_X, Dimension.TEXT_START_Y, Color.TEXT, TEXT_PARAM);
+  renderText(ctx, Text.INFO_STRING, Dimension.TEXT_START_X, Dimension.TEXT_START_Y + Dimension.TEXT_GAP_TOP, Color.TEXT, TEXT_PARAM);
+
+  // получение рандомного значения цвета в модели HSLA
+  var getRandomHslaColor = function (h, s, l, a) {
+    return 'hsla(' + h + ', ' + Math.floor(Math.random() * 100) * s / 100 + '%, ' + l + '%, ' + a + ')';
+  };
+
+  // получение максимального значения из массива времен игроков
+  var getMaxElementValue = function (numArray) {
+    var sortedArray = numArray.slice().sort(function (a, b) {
+      return b - a;
+    });
+    return sortedArray[0];
+  };
+
+  var maxTimeValue = getMaxElementValue(times);
+  // получение максимальной высоты колонки по массиву времен игроков
+  var getColumnHeight = function (num) {
+    return Math.ceil(num * Dimension.COL_HEIGHT / maxTimeValue);
+  };
+
+  // функция рисования элемента гистограммы
+  var drawGraph = function (x, y, height, color, score, name) {
+    ctx.fillStyle = Color.TEXT;
+    ctx.textBaseline = 'hanging';
+    ctx.fillText(score, x, y);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y + Dimension.TEXT_GAP_TOP, Dimension.COL_WIDTH, height);
+    ctx.fillStyle = Color.TEXT;
+    ctx.fillText(name, x, y + height + Dimension.TEXT_GAP_BOTTOM);
+  };
+
+  var startX = Dimension.COL_START_X;
+  // рисуем гистограмму в цикле по входящему массиву игроков
+  for (var i = 0; i < times.length; i++) {
+    var columnHeight = getColumnHeight(times[i]);
+    var startY = Dimension.COL_HEIGHT - columnHeight + Dimension.COL_START_Y;
+    var numString = Math.ceil(times[i]);
+    var currentColor = (i === 0) ? Color.MAIN : getRandomHslaColor(HSL_BASE_HUE, HSL_MAX_SATURATION, HSL_LIGHTNESS, HSL_ALPHA);
+    drawGraph(startX, startY, columnHeight, currentColor, numString, names[i]);
+    startX += (Dimension.COL_WIDTH + Dimension.COL_GAP);
+  }
+};
