@@ -93,7 +93,7 @@ window.renderStatistics = function (ctx, names, times) {
     var columnHeight = getRectHeight(score, maxTimeValue);
     var startY = Result.COL_HEIGHT - columnHeight + Result.COL_START_Y;
     var numString = Math.ceil(score);
-    var currentColor = getRectColor(name, 'Вы');
+    var currentColor = getRectColor(name, Result.PLAYER_NAME);
     renderText(ctx, startX, startY, Result.TEXT_COLOR, numString, null, BASE_LINE_HANGING);
     renderRect(ctx, startX, startY + Result.TEXT_GAP_TOP, Result.COL_WIDTH, columnHeight, currentColor);
     renderText(ctx, startX, startY + Result.TEXT_GAP_TOP + columnHeight + Result.TEXT_GAP_BOTTOM, Result.TEXT_COLOR, name, null, BASE_LINE_HANGING);
