@@ -4,10 +4,9 @@ var SURNAMES = ['да Марья', 'Верон', 'Мирабелла', 'Валь
 var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161)', 'rgb(56, 159, 117)', 'rgb(215, 210, 55)', 'rgb(0, 0, 0)'];
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var WIZARDS_QUANTITY = 4;
-var HIDDEN = 'hidden';
 
 var setup = document.querySelector('.setup');
-setup.classList.remove(HIDDEN);
+setup.classList.remove('hidden');
 
 // получение случайного индекса в массиве
 var getRandomIndex = function (array) {
@@ -15,21 +14,21 @@ var getRandomIndex = function (array) {
 };
 
 // получение массива объектов для отрисовки волшебников
-var getWizardsList = function (quantity) {
-  var array = [];
+var generateWizards = function (quantity) {
+  var wizardsArray = [];
   for (var i = 0; i < quantity; i++) {
-    var object = {
+    var wizard = {
       name: NAMES[getRandomIndex(NAMES)] + ' ' + SURNAMES[getRandomIndex(SURNAMES)],
       coatColor: COAT_COLORS[getRandomIndex(COAT_COLORS)],
       eyesColor: EYES_COLORS[getRandomIndex(EYES_COLORS)],
     };
-    array.push(object);
+    wizardsArray.push(wizard);
   }
-  return array;
+  return wizardsArray;
 };
 
 // создание DOM-элемента на основе объекта
-var createWizard = function (object) {
+var createWizardTemplate = function (object) {
   var wizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item').cloneNode(true);
   wizardTemplate.querySelector('.setup-similar-label').textContent = object.name;
   wizardTemplate.querySelector('.wizard-coat').style.fill = object.coatColor;
@@ -38,17 +37,18 @@ var createWizard = function (object) {
 };
 
 // отрисовка волшебников
-var renderWizards = function (array, parentElement) {
+var renderWizards = function (array) {
   var wizardFragment = document.createDocumentFragment();
   for (var i = 0; i < array.length; i++) {
-    wizardFragment.appendChild(createWizard(array[i]));
+    wizardFragment.appendChild(createWizardTemplate(array[i]));
   }
-  parentElement.appendChild(wizardFragment);
+  return wizardFragment;
 };
 
-var wizards = getWizardsList(WIZARDS_QUANTITY);
+var wizards = generateWizards(WIZARDS_QUANTITY);
 var wizardsParent = document.querySelector('.setup-similar-list');
-renderWizards(wizards, wizardsParent);
+// вынесено из функции отрисовки, т.к. по сути это две разные функции (+ чтобы функция не меняла объект вне своей области видимости)
+wizardsParent.appendChild(renderWizards(wizards));
 
 var similarWizards = document.querySelector('.setup-similar');
-similarWizards.classList.remove(HIDDEN);
+similarWizards.classList.remove('hidden');
