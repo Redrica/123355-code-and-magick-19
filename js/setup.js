@@ -9,38 +9,38 @@ var setup = document.querySelector('.setup');
 setup.classList.remove('hidden');
 
 // получение случайного индекса в массиве
-var getRandomIndex = function (array) {
+var getRandomNumber = function (array) {
   return Math.floor(Math.random() * array.length);
 };
 
 // получение массива объектов для отрисовки волшебников
 var generateWizards = function (quantity) {
-  var wizardsArray = [];
+  var wizardPropertiesArray = [];
   for (var i = 0; i < quantity; i++) {
     var wizard = {
-      name: NAMES[getRandomIndex(NAMES)] + ' ' + SURNAMES[getRandomIndex(SURNAMES)],
-      coatColor: COAT_COLORS[getRandomIndex(COAT_COLORS)],
-      eyesColor: EYES_COLORS[getRandomIndex(EYES_COLORS)],
+      name: NAMES[getRandomNumber(NAMES)] + ' ' + SURNAMES[getRandomNumber(SURNAMES)],
+      coatColor: COAT_COLORS[getRandomNumber(COAT_COLORS)],
+      eyesColor: EYES_COLORS[getRandomNumber(EYES_COLORS)],
     };
-    wizardsArray.push(wizard);
+    wizardPropertiesArray.push(wizard);
   }
-  return wizardsArray;
+  return wizardPropertiesArray;
 };
 
 // создание DOM-элемента на основе объекта
-var createWizardTemplate = function (object) {
-  var wizardTemplate = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item').cloneNode(true);
-  wizardTemplate.querySelector('.setup-similar-label').textContent = object.name;
-  wizardTemplate.querySelector('.wizard-coat').style.fill = object.coatColor;
-  wizardTemplate.querySelector('.wizard-eyes').style.fill = object.eyesColor;
-  return wizardTemplate;
+var createWizardElement = function (propertiesObject) {
+  var wizardElement = document.querySelector('#similar-wizard-template').content.querySelector('.setup-similar-item').cloneNode(true);
+  wizardElement.querySelector('.setup-similar-label').textContent = propertiesObject.name;
+  wizardElement.querySelector('.wizard-coat').style.fill = propertiesObject.coatColor;
+  wizardElement.querySelector('.wizard-eyes').style.fill = propertiesObject.eyesColor;
+  return wizardElement;
 };
 
 // отрисовка волшебников
-var renderWizards = function (array) {
+var renderWizards = function (wizardPropertiesArray) {
   var wizardFragment = document.createDocumentFragment();
-  for (var i = 0; i < array.length; i++) {
-    wizardFragment.appendChild(createWizardTemplate(array[i]));
+  for (var i = 0; i < wizardPropertiesArray.length; i++) {
+    wizardFragment.appendChild(createWizardElement(wizardPropertiesArray[i]));
   }
   return wizardFragment;
 };
