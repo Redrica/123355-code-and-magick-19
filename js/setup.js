@@ -5,8 +5,50 @@ var COAT_COLORS = ['rgb(101, 137, 164)', 'rgb(241, 43, 107)', 'rgb(146, 100, 161
 var EYES_COLORS = ['black', 'red', 'blue', 'yellow', 'green'];
 var WIZARDS_QUANTITY = 4;
 
+var Code = {
+  ENTER_KEY: 'Enter',
+  ESCAPE_KEY: 'Escape'
+};
+
 var setup = document.querySelector('.setup');
-setup.classList.remove('hidden');
+var setupOpen = document.querySelector('.setup-open');
+var setupClose = setup.querySelector('.setup-close');
+var setupName = setup.querySelector('.setup-user-name');
+
+var openPopup = function () {
+  setup.classList.remove('hidden');
+  setupClose.addEventListener('click', closePopup);
+  setupClose.addEventListener('keydown', setupCloseEnterKeypressHandler);
+  document.addEventListener('keydown', popupEscKeypressHandler);
+};
+
+var closePopup = function () {
+  setup.classList.add('hidden');
+  setupClose.removeEventListener('click', closePopup);
+  setupClose.removeEventListener('keydown', setupCloseEnterKeypressHandler);
+  document.removeEventListener('keydown', closePopup);
+};
+
+var setupOpenEnterKeypressHandler = function (evt) {
+  if (evt.key === Code.ENTER_KEY) {
+    openPopup();
+  }
+};
+
+var setupCloseEnterKeypressHandler = function (evt) {
+  if (evt.key === Code.ENTER_KEY) {
+    closePopup();
+  }
+};
+
+var popupEscKeypressHandler = function (evt) {
+  if (evt.key === Code.ESCAPE_KEY && document.activeElement !== setupName) {
+    closePopup();
+  }
+};
+
+setupOpen.addEventListener('click', openPopup);
+setupOpen.addEventListener('keydown', setupOpenEnterKeypressHandler);
 
 // получение случайного индекса в массиве
 var getRandomNumber = function (array) {
