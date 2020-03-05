@@ -33,36 +33,7 @@ var Result = {
   PLAYER_NAME: 'Вы',
 };
 
-var BASE_LINE_DEFAULT = 'alphabetic';
 var BASE_LINE_HANGING = 'hanging';
-
-// отрисовка прямоугольника по параметрам
-var renderRect = function (canvas, x, y, rectWidth, rectHeight, color) {
-  canvas.fillStyle = color;
-  canvas.fillRect(x, y, rectWidth, rectHeight);
-};
-
-// отрисовка текста по параметрам
-var renderText = function (canvas, x, y, color, string, fontParam, textBaseline) {
-  if (fontParam) {
-    canvas.font = fontParam;
-  }
-  canvas.textBaseline = textBaseline ? textBaseline : BASE_LINE_DEFAULT;
-  canvas.fillStyle = color;
-  canvas.fillText(string, x, y);
-};
-
-// получение рандомного значения цвета в модели HSLA
-var getRandomHslaColor = function (h, s, l, a) {
-  return 'hsla(' + h + ', ' + Math.floor(Math.random() * 100) * s / 100 + '%, ' + l + '%, ' + a + ')';
-};
-
-// получение максимального значения из массива времен игроков
-var getMaxElementValue = function (numArray) {
-  return numArray.reduce(function (a, b) {
-    return Math.max(a, b);
-  });
-};
 
 var getRectStartX = function (x, graphWidth, graphGap, index) {
   return x + (graphWidth + graphGap) * index;
@@ -77,16 +48,16 @@ var getRectColor = function (name) {
   if (name === Result.PLAYER_NAME) {
     return Result.MAIN_COLOR;
   }
-  return getRandomHslaColor(Result.HSL_BASE_HUE, Result.HSL_MAX_SATURATION, Result.HSL_LIGHTNESS, Result.HSL_ALPHA);
+  return window.util.getRandomHslaColor(Result.HSL_BASE_HUE, Result.HSL_MAX_SATURATION, Result.HSL_LIGHTNESS, Result.HSL_ALPHA);
 };
 
 window.renderStatistics = function (ctx, names, times) {
-  renderRect(ctx, Cloud.CLOUD_START_X + Cloud.CLOUD_GAP, Cloud.CLOUD_START_Y + Cloud.CLOUD_GAP, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT, Cloud.SHADOW_COLOR);
-  renderRect(ctx, Cloud.CLOUD_START_X, Cloud.CLOUD_START_Y, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT, Cloud.BACKGROUND_COLOR);
-  renderText(ctx, Cloud.TEXT_START_X, Cloud.TEXT_START_Y, Cloud.TEXT_COLOR, Cloud.START_STRING, Cloud.TEXT_PARAM, false);
-  renderText(ctx, Cloud.TEXT_START_X, Cloud.TEXT_START_Y + Cloud.TEXT_GAP, Cloud.TEXT_COLOR, Cloud.INFO_STRING, Cloud.TEXT_PARAM, false);
+  window.util.renderRect(ctx, Cloud.CLOUD_START_X + Cloud.CLOUD_GAP, Cloud.CLOUD_START_Y + Cloud.CLOUD_GAP, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT, Cloud.SHADOW_COLOR);
+  window.util.renderRect(ctx, Cloud.CLOUD_START_X, Cloud.CLOUD_START_Y, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT, Cloud.BACKGROUND_COLOR);
+  window.util.renderText(ctx, Cloud.TEXT_START_X, Cloud.TEXT_START_Y, Cloud.TEXT_COLOR, Cloud.START_STRING, Cloud.TEXT_PARAM, false);
+  window.util.renderText(ctx, Cloud.TEXT_START_X, Cloud.TEXT_START_Y + Cloud.TEXT_GAP, Cloud.TEXT_COLOR, Cloud.INFO_STRING, Cloud.TEXT_PARAM, false);
 
-  var maxTimeValue = getMaxElementValue(times);
+  var maxTimeValue = window.util.getMaxElementValue(times);
 
   // функция рисования элемента гистограммы
   var drawGraph = function (startX, score, name) {
@@ -94,9 +65,9 @@ window.renderStatistics = function (ctx, names, times) {
     var startY = Result.COL_HEIGHT - columnHeight + Result.COL_START_Y;
     var numString = Math.ceil(score);
     var currentColor = getRectColor(name);
-    renderText(ctx, startX, startY, Result.TEXT_COLOR, numString, null, BASE_LINE_HANGING);
-    renderRect(ctx, startX, startY + Result.TEXT_GAP_TOP, Result.COL_WIDTH, columnHeight, currentColor);
-    renderText(ctx, startX, startY + Result.TEXT_GAP_TOP + columnHeight + Result.TEXT_GAP_BOTTOM, Result.TEXT_COLOR, name, null, BASE_LINE_HANGING);
+    window.util.renderText(ctx, startX, startY, Result.TEXT_COLOR, numString, null, BASE_LINE_HANGING);
+    window.util.renderRect(ctx, startX, startY + Result.TEXT_GAP_TOP, Result.COL_WIDTH, columnHeight, currentColor);
+    window.util.renderText(ctx, startX, startY + Result.TEXT_GAP_TOP + columnHeight + Result.TEXT_GAP_BOTTOM, Result.TEXT_COLOR, name, null, BASE_LINE_HANGING);
   };
 
   // рисуем гистограмму в цикле по входящему массиву игроков
