@@ -11,6 +11,7 @@
     setupClose.addEventListener('click', closePopup);
     setupClose.addEventListener('keydown', setupCloseEnterKeypressHandler);
     document.addEventListener('keydown', popupEscKeypressHandler);
+    window.dialogMove.dialogHandler.addEventListener('mousedown', window.dialogMove.dialogHandleMouseDownHandler);
   };
 
   var closePopup = function () {
@@ -18,6 +19,8 @@
     setupClose.removeEventListener('click', closePopup);
     setupClose.removeEventListener('keydown', setupCloseEnterKeypressHandler);
     document.removeEventListener('keydown', closePopup);
+    window.dialogMove.dialogHandler.removeEventListener('mousedown', window.dialogMove.dialogHandleMouseDownHandler);
+    window.dialogMove.cleanSetupPosition();
   };
 
   var setupOpenEnterKeypressHandler = function (evt) {
